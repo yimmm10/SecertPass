@@ -25,7 +25,7 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.questionText}>ท่านต้องการจะปรึกษาในด้านใด?</Text>
         <Spacer height={20} />
         {/* Buttons */}
-        <TouchableOpacity style={styles.button} /*onPress={() => navigation.navigate('SavePasswordScreen')}*/>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainProject')}>
           <Text style={styles.buttonText}>จัดเก็บรหัสผ่านของท่าน</Text>
         </TouchableOpacity>
         
