@@ -24,6 +24,7 @@
     "events": "^1.0.0",
     "expo": "~51.0.28",
     "expo-status-bar": "~1.12.1",
+    "firebase": "^10.13.1",
     "https-browserify": "^0.0.1",
     "node-libs-react-native": "^1.2.1",
     "path-browserify": "^0.0.0",

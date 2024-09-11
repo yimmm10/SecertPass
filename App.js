@@ -8,6 +8,9 @@ import RegisterScreen from './screens/RegisterScreen'; // หน้า Register
 import ExampleScreen from './screens/ExampleScreen'; // หน้า AES Encryption
 import INsideHomeScreen from './screens/INsideHomeScreen'; // หน้าอื่นๆ
 import MainProjectScreen from './screens/MainProjectScreen'
+import TestScreen from './screens/TestScreen'
+
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -21,6 +24,7 @@ export default function App() {
         <Stack.Screen name="Home2" component={INsideHomeScreen} />
         <Stack.Screen name="MainProject" component={MainProjectScreen} />
         <Stack.Screen name="Exam" component={ExampleScreen} />
+        <Stack.Screen name="Test" component={TestScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

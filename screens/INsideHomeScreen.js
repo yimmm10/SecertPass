@@ -34,6 +34,12 @@ export default function HomeScreen({ navigation }) {
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Exam')}>
           <Text style={styles.buttonText}>ทดสอบระบบจัดการรหัสผ่าน</Text>
         </TouchableOpacity>
+        
+        <Spacer height={10} />
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Test')}>
+          <Text style={styles.buttonText}>TEST</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -45,7 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    marginBottom: 280,
+    marginBottom: 200,
     
   },
   header: {
@@ -88,14 +94,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#666',
     borderRadius: 10,
     paddingVertical: 15,
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     width: '80%',
     marginBottom: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 3, // For Android shadow effect
+    elevation: 5, // For Android shadow effect
   },
   buttonText: {
     color: '#fff',
