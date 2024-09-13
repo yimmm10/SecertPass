@@ -1,44 +1,50 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-
-const Spacer = ({ height }) => <View style={{ height }} />
+const Spacer = ({ height }) => <View style={{ height }} />;
 
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Secert Password</Text>
+        <Text style={styles.title}>Secret Password</Text>
       </View>
-      
-      
+
       {/* Content */}
       <View style={styles.content}>
         <Text style={styles.welcomeText}>ยินดีต้อนรับ</Text>
-        
+
         <Spacer height={20} />
 
         <Text style={styles.descriptionText}>
-          เข้าสู่ระบบจัดการจัดผ่านที่มีความปลอดภัยมากที่สุดในขณะนี้
+          เข้าสู่ระบบจัดการรหัสผ่านที่มีความปลอดภัยมากที่สุดในขณะนี้
         </Text>
         <Text style={styles.questionText}>ท่านต้องการจะปรึกษาในด้านใด?</Text>
-        <Spacer height={20} />
+        </View>
+        <Spacer height={10} />
+        
+        
+        <View style={styles.buttoncontainer}>
         {/* Buttons */}
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainProject')}>
           <Text style={styles.buttonText}>จัดเก็บรหัสผ่านของท่าน</Text>
         </TouchableOpacity>
-        
+
         <Spacer height={10} />
 
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Exam')}>
           <Text style={styles.buttonText}>ทดสอบระบบจัดการรหัสผ่าน</Text>
         </TouchableOpacity>
-        
+
         <Spacer height={10} />
 
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Test')}>
           <Text style={styles.buttonText}>TEST</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.buttonlog}onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.buttonText}>คนไทย</Text> 
         </TouchableOpacity>
       </View>
     </View>
@@ -49,10 +55,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 200,
-    
   },
   header: {
     backgroundColor: '#000', // Header background color
@@ -79,7 +84,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 16,
-    color: '#555', // Slightly lighter gray
+    color: '#000', // Slightly lighter gray
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -91,11 +96,11 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   button: {
-    backgroundColor: '#666',
+    backgroundColor: '#555',
     borderRadius: 10,
     paddingVertical: 15,
-    paddingHorizontal: 30,
-    width: '80%',
+    paddingHorizontal: 25,
+    alignItems: 'center',
     marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 2 },
@@ -108,5 +113,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
     fontWeight: '600',
+  },
+  buttoncontainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f4f4f4',
   },
 });

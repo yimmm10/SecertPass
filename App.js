@@ -7,10 +7,8 @@ import LoginScreen from './screens/LoginScreen'; // หน้า Login
 import RegisterScreen from './screens/RegisterScreen'; // หน้า Register
 import ExampleScreen from './screens/ExampleScreen'; // หน้า AES Encryption
 import INsideHomeScreen from './screens/INsideHomeScreen'; // หน้าอื่นๆ
-import MainProjectScreen from './screens/MainProjectScreen'
-import TestScreen from './screens/TestScreen'
-
-
+import MainProjectScreen from './screens/MainProjectScreen';
+import TestScreen from './screens/TestScreen';
 const Stack = createStackNavigator();
 
 export default function App() {

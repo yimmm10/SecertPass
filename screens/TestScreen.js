@@ -10,7 +10,6 @@ export default function EncryptDecryptScreen() {
   const [keyInput, setKeyInput] = useState('');
   const [ivInput, setIvInput] = useState('');
 
-
   const getKey = () => {
     // Pad or truncate key to ensure it's 16 bytes (128 bits) for AES-128
     return CryptoJS.enc.Utf8.parse(keyInput.padEnd(16, ' ').substring(0, 16));
@@ -54,33 +53,47 @@ export default function EncryptDecryptScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>AES-128-CBC Encryption & Decryption</Text>
+
+      {/* Text input for encryption/decryption */}
       <TextInput
         style={styles.input}
-        placeholder="Enter text to encrypt"
+        placeholder="Enter text to encrypt/decrypt"
         value={textToEncrypt}
         onChangeText={setTextToEncrypt}
       />
+
+      {/* Key input */}
       <TextInput
         style={styles.input}
         placeholder="Enter key (up to 16 characters)"
         value={keyInput}
         onChangeText={setKeyInput}
       />
+
+      {/* IV input */}
       <TextInput
         style={styles.input}
         placeholder="Enter IV (up to 16 characters)"
         value={ivInput}
         onChangeText={setIvInput}
       />
+
+      {/* Result display */}
       <TextInput
         style={styles.input}
         placeholder="Result"
         value={result}
         editable={false}
       />
+
       <Spacer height={10} />
+
+      {/* Encryption button */}
       <Button title="Encrypt" onPress={encrypt} />
+
       <Spacer height={20} />
+
+      {/* Decryption button */}
       <Button title="Decrypt" onPress={decrypt} />
     </View>
   );
