@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity , StyleSheet, Alert } from 'react-native';
+import { auth } from '../firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore } from '@firebase/firestore';
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState('');
@@ -21,11 +24,7 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    // Perform registration logic here
-    // Example: send data to the server
-    // ...
 
-    // Show success message and navigate to login screen
     Alert.alert('Success', 'Registration successful!', [
       { text: 'OK', onPress: () => navigation.navigate('Login') }
     ]);
