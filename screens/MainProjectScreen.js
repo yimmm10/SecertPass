@@ -4,12 +4,12 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 export default function MainProjectScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [application, setApplication] = useState('');
+  const [Web , setWeb] = useState('');
   const [note, setNote] = useState('');
 
   const handleSave = () => {
     // ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
-    if (!username || !password || !application || !note) {
+    if (!username || !password || !Web || !note) {
       Alert.alert('ข้อผิดพลาด', 'กรุณากรอกข้อมูลให้ครบถ้วน!');
       return;
     }
@@ -17,7 +17,7 @@ export default function MainProjectScreen() {
     // บันทึกข้อมูลไปยังฐานข้อมูลหรือทำการประมวลผลอื่นๆ
     console.log('Username:', username);
     console.log('Password:', password);
-    console.log('Application:', application);
+    console.log('Web:', Web);
     console.log('Note:', note);
 
     // แสดง Alert เมื่อบันทึกสำเร็จ
@@ -42,9 +42,9 @@ export default function MainProjectScreen() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Application"
-        value={application}
-        onChangeText={setApplication}
+        placeholder="Web"
+        value={Web}
+        onChangeText={setWeb}
       />
       <TextInput
         style={styles.input}

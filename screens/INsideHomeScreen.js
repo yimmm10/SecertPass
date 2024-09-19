@@ -6,11 +6,16 @@ const Spacer = ({ height }) => <View style={{ height }} />;
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      {/* Header */}
+
       <View style={styles.header}>
         <Text style={styles.title}>Secret Password</Text>
       </View>
+      <Spacer height={20} />
 
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainProject')}>
+      <Text style={styles.buttonText}>จัดเก็บรหัสผ่านของท่าน</Text>
+      </TouchableOpacity>
+      
       {/* Content */}
       <View style={styles.content}>
         <Text style={styles.welcomeText}>ยินดีต้อนรับ</Text>
@@ -26,26 +31,7 @@ export default function HomeScreen({ navigation }) {
         
         
         <View style={styles.buttoncontainer}>
-        {/* Buttons */}
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainProject')}>
-          <Text style={styles.buttonText}>จัดเก็บรหัสผ่านของท่าน</Text>
-        </TouchableOpacity>
-
-        <Spacer height={10} />
-
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Exam')}>
-          <Text style={styles.buttonText}>ทดสอบระบบจัดการรหัสผ่าน</Text>
-        </TouchableOpacity>
-
-        <Spacer height={10} />
-
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Test')}>
-          <Text style={styles.buttonText}>TEST</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.buttonlog}onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.buttonText}>คนไทย</Text> 
-        </TouchableOpacity>
+          
       </View>
     </View>
   );

@@ -8,6 +8,8 @@ const Spacer = ({ height }) => <View style={{ height }} />;
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/IMG/logo_project.png')} style={styles.image} />
+
       <Text style={styles.title}>Secert Password</Text>
       <Text style={styles.textwel}>Welcome</Text>
       <Text style={styles.text}>No matter what your password is,</Text>
@@ -16,7 +18,7 @@ export default function HomeScreen({ navigation }) {
       
       <Spacer height={20} />
 
-      <Image source={require('../assets/IMG/image-bg.png')} style={styles.image} />
+    
       
       <TouchableOpacity style={styles.buttonreg}onPress={() => navigation.navigate('Register')}>
         <Text style={styles.buttonText}>Sign Up</Text>
@@ -27,7 +29,10 @@ export default function HomeScreen({ navigation }) {
       <TouchableOpacity style={styles.buttonlog}onPress={() => navigation.navigate('Login')}>
         <Text style={styles.buttonText}>Login</Text> 
         </TouchableOpacity>
-
+        
+        <Text style={styles.linkText}onPress={() => navigation.navigate('Register')}>
+        You don't have a Account yet? Register here
+        </Text>
     </View>
   );
 }
@@ -38,6 +43,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#f0f0f0',
+    marginBottom: 170,
   },
   title: {
     fontSize: 24,

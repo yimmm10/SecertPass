@@ -1,18 +1,42 @@
 
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { auth } from '../firebaseConfig'; 
+import {sendVerificationCode} from '../firebaseConfig';
 
 export default function OTPScreen({ navigation }) {
   const [otp, setOtp] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState('');
+  const [phone, setPhone] = useState('');
 
-useEffect(() => {
-  // Generate a 6-digit OTP when the screen loads
+  useEffect(() => {
   const newOtp = Math.floor(100000 + Math.random() * 900000).toString(); 
   setGeneratedOtp(newOtp);
-  console.log(`Generated OTP: ${newOtp}`); // This will display the OTP in the console
-}, []);
+  
+  const sendVerificationCode = async () => {
+    try {
+      await auth.verifyPhoneNumber(phone, {
+        timeoutSeconds: 60,
+        forceCodeSend: true,
+      })
+      .then((confirmationResult) => {
+        // Handle verification result
+        console.log('Verification code sent successfully');
+      })
+      .catch((error) => {
+        console.error('Error sending verification code:', error);
+      });
+    } catch (error) {
+      console.error('Error sending verification code:', error);
+    }
+  };
 
+  sendVerificationCode();
+  
+  console.log(`Generated OTP: ${newOtp}`);
+  
+   // This will display the OTP in the console
+}, [phone]);
 
 
   const verifyOtp = () => {
@@ -36,7 +60,7 @@ useEffect(() => {
         placeholder="Enter OTP"
         value={otp}
         onChangeText={setOtp}
-        maxLength={6}  // Restrict to 6 digits
+        maxLength={6}
       />
       
       <TouchableOpacity style={styles.button} onPress={verifyOtp}>
