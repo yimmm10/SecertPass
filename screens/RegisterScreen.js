@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity , StyleSheet, Alert } from 'react-native';
-import { auth } from '../firebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore } from '@firebase/firestore';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { auth, firestore } from '../firebaseConfig'; 
+import { createUserWithEmailAndPassword } from 'firebase/auth'; 
+import { doc, setDoc } from 'firebase/firestore'; 
 
 export default function RegisterScreen({ navigation }) {
   const [username, setUsername] = useState('');
@@ -11,7 +11,7 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     // Check if the passwords match
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match!');
@@ -24,16 +24,33 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
+    try {
+      // Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    Alert.alert('Success', 'Registration successful!', [
-      { text: 'OK', onPress: () => navigation.navigate('Login') }
-    ]);
+      // Save user data to Firestore
+      await setDoc(doc(firestore, 'users', user.uid), {
+        username: username,
+        email: email,
+        phone: phone,
+      });
+
+      // Navigate to OTP screen with phone number
+      navigation.navigate('OTP', { phoneNumber: phone });
+      
+      Alert.alert('Success', 'Registration successful!', [
+        { text: 'OK', onPress: () => navigation.navigate('Login') }
+      ]);
+    } catch (error) {
+      // Handle errors
+      Alert.alert('Error', error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -68,9 +85,9 @@ export default function RegisterScreen({ navigation }) {
         value={phone}
         onChangeText={setPhone}
       />
-         <TouchableOpacity style={styles.buttonlogin} onPress={handleRegister}>
-                <Text style={styles.buttonText}>Sign Up</Text>
-            </TouchableOpacity>
+      <TouchableOpacity style={styles.buttonlogin} onPress={handleRegister}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 }

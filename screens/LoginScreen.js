@@ -1,17 +1,19 @@
-// screens/LoginScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { auth } from '../firebaseConfig'; 
+import { signInWithEmailAndPassword } from 'firebase/auth'; 
 
 const Spacer = ({ height }) => <View style={{ height }} />;
-//<Spacer height={20} />
+
 export default function LoginScreen({ navigation }) {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
 
     const handleLogin = () => {
-        // Check if both username and password are provided
-        if (!username.trim()) {
-            Alert.alert('Error', 'Please enter your username');
+        // Check if both email and password are provided
+        if (!email.trim()) {
+            Alert.alert('Error', 'Please enter your email');
             return;
         }
 
@@ -20,8 +22,16 @@ export default function LoginScreen({ navigation }) {
             return;
         }
 
-        // If both are valid, navigate to OTP screen
-        navigation.navigate('OTP');
+        // Firebase authentication sign-in
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Successful login
+                navigation.navigate('OTP'); // Navigate to OTP screen
+            })
+            .catch((error) => {
+                // Handle errors
+                Alert.alert('Error', error.message);
+            });
     };
 
     return (
@@ -29,9 +39,10 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.title}>Login</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
+                placeholder="Email"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
             />
             <TextInput
                 style={styles.input}
