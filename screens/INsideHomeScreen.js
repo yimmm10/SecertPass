@@ -1,38 +1,52 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
-const Spacer = ({ height }) => <View style={{ height }} />;
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 export default function HomeScreen({ navigation }) {
+  const [passwordList, setPasswordList] = useState([]);
+
+  useEffect(() => {
+    // ดึงข้อมูลจาก Firestore
+    const q = query(collection(db, 'userPasswords'), orderBy('application'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const passwords = snapshot.docs.map(doc => ({
+        id: doc.id, // เก็บ ID ของเอกสารเพื่อใช้อ้างอิง
+        ...doc.data(),
+      }));
+      setPasswordList(passwords);
+    });
+
+    // ยกเลิกการฟังเมื่อคอมโพเนนต์ถูกทำลาย
+    return () => unsubscribe();
+  }, []);
+
+  // ฟังก์ชันสำหรับแสดงรายการในรูปแบบ FlatList
+  const renderItem = ({ item }) => (
+    <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Details', { item })}>
+      <Text style={styles.application}>{item.application}</Text>
+      <Text style={styles.username}>{item.username}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
-
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Secret Password</Text>
+        {/* ปุ่ม + ด้านบนขวา */}
+        <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('MainProject')}>
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
       </View>
-      <Spacer height={20} />
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainProject')}>
-      <Text style={styles.buttonText}>จัดเก็บรหัสผ่านของท่าน</Text>
-      </TouchableOpacity>
-      
-      {/* Content */}
-      <View style={styles.content}>
-        <Text style={styles.welcomeText}>ยินดีต้อนรับ</Text>
-
-        <Spacer height={20} />
-
-        <Text style={styles.descriptionText}>
-          เข้าสู่ระบบจัดการรหัสผ่านที่มีความปลอดภัยมากที่สุดในขณะนี้
-        </Text>
-        <Text style={styles.questionText}>ท่านต้องการจะปรึกษาในด้านใด?</Text>
-        </View>
-        <Spacer height={10} />
-        
-        
-        <View style={styles.buttoncontainer}>
-          
-      </View>
+      {/* แสดงรายการข้อมูล */}
+      <FlatList
+        data={passwordList}
+        renderItem={renderItem}
+        keyExtractor={item => item.id} // ใช้ id เป็น key
+        contentContainerStyle={styles.listContainer} // ปรับสไตล์ของ FlatList
+      />
     </View>
   );
 }
@@ -41,69 +55,51 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 200,
+    justifyContent: 'flex-start',
   },
   header: {
-    backgroundColor: '#000', // Header background color
-    paddingVertical: 30,
-    paddingHorizontal: 20,
+    flexDirection: 'row',
+    backgroundColor: '#5383C3',
+    paddingHorizontal: 10,
+    paddingVertical: 15,
     width: '100%',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff', // White text in the header
+    color: '#fff',
   },
-  content: {
-    marginTop: 50, // Spacing between the header and content
+  addButton: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#fff',
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    marginRight: 5,
   },
-  welcomeText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333', // Darker text color for readability
-    textAlign: 'center',
+  addButtonText: {
+    fontSize: 30,
+    color: '#626466',
   },
-  descriptionText: {
-    fontSize: 16,
-    color: '#000', // Slightly lighter gray
-    textAlign: 'center',
-    marginBottom: 20,
+  item: {
+    padding: 15,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
-  questionText: {
+  application: {
     fontSize: 18,
-    fontWeight: '500',
-    textAlign: 'center',
-    marginBottom: 20,
+    fontWeight: 'bold',
+  },
+  username: {
+    fontSize: 16,
     color: '#666',
   },
-  button: {
-    backgroundColor: '#555',
-    borderRadius: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    alignItems: 'center',
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5, // For Android shadow effect
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  buttoncontainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f4f4f4',
+  listContainer: {
+    paddingBottom: 20, // เพิ่มพื้นที่ด้านล่าง
   },
 });

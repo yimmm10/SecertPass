@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { auth, db } from '../firebaseConfig'; 
+import { auth, firestore } from '../firebaseConfig'; 
 import { createUserWithEmailAndPassword } from 'firebase/auth'; 
 import { doc, setDoc } from 'firebase/firestore'; 
 
@@ -30,7 +30,7 @@ export default function RegisterScreen({ navigation }) {
       const user = userCredential.user;
 
       // Save user data to Firestore
-      await setDoc(doc(db ,'users', user.uid), {
+      await setDoc(doc(firestore, 'users', user.uid), {
         username: username,
         email: email,
         phone: phone,
@@ -93,36 +93,36 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#f5f5f5',
-  },
-  title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 20,
-  },
-  input: {
-      height: 50,
-      borderColor: '#ccc',
-      borderWidth: 1,
-      marginBottom: 15,
-      padding: 10,
-      borderRadius: 5,
-      width: '80%',
-  },
-  buttonlogin: {
-      backgroundColor: '#000',
-      padding: 15,
-      borderRadius: 5,
-      width: '50%',
-      alignItems: 'center',
-  },
-  buttonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: 16,
-  },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f5f5f5',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    input: {
+        height: 50,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        marginBottom: 15,
+        padding: 10,
+        borderRadius: 5,
+        width: '80%',
+    },
+    buttonlogin: {
+        backgroundColor: '#000',
+        padding: 15,
+        borderRadius: 5,
+        width: '50%',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 });

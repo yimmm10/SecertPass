@@ -18,21 +18,16 @@ export default function HomeScreen({ navigation }) {
       
       <Spacer height={20} />
 
-    
-      
-      <TouchableOpacity style={styles.buttonreg}onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
-
-      <Spacer height={10} />
-
       <TouchableOpacity style={styles.buttonlog}onPress={() => navigation.navigate('Login')}>
         <Text style={styles.buttonText}>Login</Text> 
         </TouchableOpacity>
-        
-        <Text style={styles.linkText}onPress={() => navigation.navigate('Register')}>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+      <Text style={styles.linkText}>
         You don't have a Account yet? Register here
-        </Text>
+      </Text>
+</TouchableOpacity>
+
     </View>
   );
 }
@@ -43,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#f0f0f0',
-    marginBottom: 170,
+    marginBottom: 150,
   },
   title: {
     fontSize: 24,
@@ -64,9 +59,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   image: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     marginBottom: 20,
+    marginLeft: 35,
   },
   buttonreg: {
     backgroundColor: '#000000',
@@ -77,7 +73,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonlog: {
-    backgroundColor: '#888',
+    backgroundColor: '#000',
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
@@ -87,5 +83,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  linkText: {
+    fontSize: 16,
+    color: 'gray', // สีลิงก์เป็นเทา
+    textDecorationLine: 'underline', // ขีดเส้นใต้ข้อความเพื่อให้ดูเหมือนลิงก์
+    textAlign: 'center', // จัดตำแหน่งข้อความให้อยู่ตรงกลาง
+    marginTop: 20, // เพิ่มระยะห่างด้านบน
   },
 });

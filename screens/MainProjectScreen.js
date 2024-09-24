@@ -1,32 +1,77 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../firebaseConfig'; // import db และ auth สำหรับ Firebase
 
-export default function MainProjectScreen() {
+export default function MainProjectScreen({ navigation }) {
+  const [application, setApplication] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [Web , setWeb] = useState('');
   const [note, setNote] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState('');
+  const [strength, setStrength] = useState(0);
 
-  const handleSave = () => {
-    // ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
-    if (!username || !password || !Web || !note) {
-      Alert.alert('ข้อผิดพลาด', 'กรุณากรอกข้อมูลให้ครบถ้วน!');
+  const checkPasswordStrength = (password) => {
+    let score = 0;
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[a-z]/.test(password)) score += 1;
+    if (/\d/.test(password)) score += 1;
+    if (/[\W_]/.test(password)) score += 1;
+    return score;
+  };
+
+  const handlePasswordChange = (password) => {
+    setPassword(password);
+    const strengthScore = checkPasswordStrength(password);
+    setStrength(strengthScore);
+    setPasswordStrength(strengthScore > 4 ? 'Strong' : strengthScore > 2 ? 'Medium' : 'Weak');
+  };
+
+  const saveData = async () => {
+    if (!application || !username || !password) {
+      alert('Please enter application, username, and password');
       return;
     }
 
-    // บันทึกข้อมูลไปยังฐานข้อมูลหรือทำการประมวลผลอื่นๆ
-    console.log('Username:', username);
-    console.log('Password:', password);
-    console.log('Web:', Web);
-    console.log('Note:', note);
+    try {
+      const user = auth.currentUser; // Get current user
+      if (!user) {
+        alert('User not logged in');
+        return;
+      }
 
-    // แสดง Alert เมื่อบันทึกสำเร็จ
-    Alert.alert('บันทึกสำเร็จ', 'ข้อมูลถูกบันทึกเรียบร้อยแล้ว!');
+      await addDoc(collection(db, 'userPasswords'), {
+        application: application,
+        username: username,
+        password: password,
+        note: note || '',
+        createdAt: serverTimestamp(), // Store timestamp
+        userId: user.uid, // Store the current user's ID
+      });
+
+      alert('Data saved successfully');
+      navigation.navigate('Home2');
+
+      // Clear input fields
+      setApplication('');
+      setUsername('');
+      setPassword('');
+      setNote('');
+    } catch (error) {
+      console.error('Error saving data: ', error);
+      alert('Error saving data');
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>เพิ่มข้อมูลของคุณ</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Application"
+        value={application}
+        onChangeText={setApplication}
+      />
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -37,23 +82,27 @@ export default function MainProjectScreen() {
         style={styles.input}
         placeholder="Password"
         value={password}
-        onChangeText={setPassword}
-        secureTextEntry
+        onChangeText={handlePasswordChange}
+        secureTextEntry={true} // Hide password by default
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Web"
-        value={Web}
-        onChangeText={setWeb}
-      />
+      <View style={styles.progressBarContainer}>
+        <View
+          style={[
+            styles.progressBar,
+            { width: `${strength * 20}%`, backgroundColor: strength > 4 ? 'green' : strength > 2 ? 'orange' : 'red' }
+          ]}
+        />
+      </View>
+      <Text style={styles.strengthText}>Password Strength: {passwordStrength}</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Note"
         value={note}
         onChangeText={setNote}
       />
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>SAVE</Text>
+      <TouchableOpacity style={styles.button} onPress={saveData}>
+        <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>
     </View>
   );
@@ -61,35 +110,40 @@ export default function MainProjectScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f4f4f4',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
   },
   input: {
-    height: 50,
-    borderColor: '#ccc',
     borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
+    padding: 10,
+    marginBottom: 10,
+    borderColor: '#ccc',
     borderRadius: 5,
-    backgroundColor: '#fff',
+  },
+  progressBarContainer: {
+    height: 10,
+    width: '100%',
+    backgroundColor: '#ccc',
+    borderRadius: 5,
+    overflow: 'hidden',
+    marginBottom: 10,
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 5,
+  },
+  strengthText: {
+    marginBottom: 10,
+    fontWeight: 'bold',
   },
   button: {
-    backgroundColor: '#888',
-    paddingVertical: 10,
-    alignItems: 'center',
+    backgroundColor: '#000',
+    padding: 15,
     borderRadius: 5,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

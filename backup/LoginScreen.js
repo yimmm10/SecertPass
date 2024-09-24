@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { auth } from '../firebaseConfig';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../firebaseConfig'; 
+import { signInWithEmailAndPassword } from 'firebase/auth'; 
 
 const Spacer = ({ height }) => <View style={{ height }} />;
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+    const [phone, setPhone] = useState('');
+
     const handleLogin = () => {
         // Check if both email and password are provided
         if (!email.trim()) {
@@ -33,21 +34,6 @@ export default function LoginScreen({ navigation }) {
             });
     };
 
-    const handlePasswordReset = () => {
-        if (!email.trim()) {
-            Alert.alert('Error', 'Please enter your email to reset password');
-            return;
-        }
-
-        sendPasswordResetEmail(auth, email)
-            .then(() => {
-                Alert.alert('Success', 'Password reset email sent!');
-            })
-            .catch((error) => {
-                Alert.alert('Error', error.message);
-            });
-    };
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
@@ -65,13 +51,7 @@ export default function LoginScreen({ navigation }) {
                 value={password}
                 onChangeText={setPassword}
             />
-
-            <TouchableOpacity onPress={handlePasswordReset}>
-                <Text style={styles.linkText}>You Forgot Password? Reset here!</Text>
-            </TouchableOpacity>
-
             <Spacer height={20} />
-
             <TouchableOpacity style={styles.buttonlogin} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
@@ -111,12 +91,5 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
-    },
-    linkText: {
-        fontSize: 16,
-        color: 'gray',
-        textDecorationLine: 'underline',
-        textAlign: 'center',
-        marginTop: 20,
     },
 });
