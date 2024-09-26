@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { collection, query, orderBy, where, onSnapshot } from 'firebase/firestore';
+import { db, auth } from '../firebaseConfig'; // import auth สำหรับ Firebase Authentication
 
 export default function HomeScreen({ navigation }) {
   const [passwordList, setPasswordList] = useState([]);
 
   useEffect(() => {
-    // ดึงข้อมูลจาก Firestore
-    const q = query(collection(db, 'userPasswords'), orderBy('application'));
+    // ดึงข้อมูลผู้ใช้ที่ล็อกอินอยู่
+    const user = auth.currentUser;
+    if (!user) {
+      alert('User not logged in');
+      return;
+    }
+
+    // ดึงข้อมูลจาก Firestore โดยกรองตาม userId ของผู้ใช้ที่ล็อกอิน
+    const q = query(
+      collection(db, 'userPasswords'),
+      where('userId', '==', user.uid), // กรองข้อมูลเฉพาะของผู้ใช้ที่ล็อกอิน
+      orderBy('application')
+    );
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const passwords = snapshot.docs.map(doc => ({
+      const passwords = snapshot.docs.map((doc) => ({
         id: doc.id, // เก็บ ID ของเอกสารเพื่อใช้อ้างอิง
         ...doc.data(),
       }));
@@ -44,7 +56,7 @@ export default function HomeScreen({ navigation }) {
       <FlatList
         data={passwordList}
         renderItem={renderItem}
-        keyExtractor={item => item.id} // ใช้ id เป็น key
+        keyExtractor={(item) => item.id} // ใช้ id เป็น key
         contentContainerStyle={styles.listContainer} // ปรับสไตล์ของ FlatList
       />
     </View>

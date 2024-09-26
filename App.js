@@ -7,6 +7,8 @@ import LoginScreen from './screens/LoginScreen'; // หน้า Login
 import RegisterScreen from './screens/RegisterScreen'; // หน้า Register
 import INsideHomeScreen from './screens/INsideHomeScreen'; // หน้าอื่นๆ
 import MainProjectScreen from './screens/MainProjectScreen';
+import DetailsScreen from './screens/DetailsScreen';
+
 
 const Stack = createStackNavigator();  
 
@@ -20,6 +22,7 @@ export default function App() {
         <Stack.Screen name="OTP" component={OTPScreen} />
         <Stack.Screen name="Home2" component={INsideHomeScreen} />
         <Stack.Screen name="MainProject" component={MainProjectScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

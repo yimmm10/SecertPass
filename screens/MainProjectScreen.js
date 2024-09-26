@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { doc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig'; // import db และ auth สำหรับ Firebase
+import { useFocusEffect } from '@react-navigation/native'; // สำหรับการดึงข้อมูลใหม่เมื่อหน้าจอ active
 
 export default function MainProjectScreen({ navigation }) {
   const [application, setApplication] = useState('');
@@ -10,24 +11,67 @@ export default function MainProjectScreen({ navigation }) {
   const [note, setNote] = useState('');
   const [passwordStrength, setPasswordStrength] = useState('');
   const [strength, setStrength] = useState(0);
+  const [userPasswords, setUserPasswords] = useState([]); // state สำหรับเก็บรหัสผ่านของผู้ใช้
+  const [loading, setLoading] = useState(false); // สถานะโหลด
+  const [error, setError] = useState(''); // สถานะข้อผิดพลาด
 
-  const checkPasswordStrength = (password) => {
+  // ฟังก์ชันตรวจสอบความแข็งแรงของรหัสผ่าน
+  const checkPasswordStrength = (password, username) => {
     let score = 0;
     if (password.length >= 8) score += 1;
     if (/[A-Z]/.test(password)) score += 1;
     if (/[a-z]/.test(password)) score += 1;
     if (/\d/.test(password)) score += 1;
     if (/[\W_]/.test(password)) score += 1;
+    if (!password.includes(username)) score += 1; // ตรวจสอบว่ารหัสผ่านไม่ซ้ำกับชื่อผู้ใช้
     return score;
   };
 
+  // ฟังก์ชันที่รันเมื่อเปลี่ยนรหัสผ่าน
   const handlePasswordChange = (password) => {
     setPassword(password);
-    const strengthScore = checkPasswordStrength(password);
+    const strengthScore = checkPasswordStrength(password, username);
     setStrength(strengthScore);
     setPasswordStrength(strengthScore > 4 ? 'Strong' : strengthScore > 2 ? 'Medium' : 'Weak');
   };
 
+  // ดึงรหัสผ่านของผู้ใช้จาก Firestore
+  const fetchUserPasswords = async () => {
+    setLoading(true); // เริ่มโหลด
+    setError(''); // ล้าง error
+    try {
+      const user = auth.currentUser; // ตรวจสอบว่าผู้ใช้ล็อกอินแล้ว
+      if (!user) {
+        setLoading(false);
+        alert('User not logged in');
+        return;
+      }
+
+      const q = query(collection(db, 'userPasswords'), where('userId', '==', user.uid));
+      const querySnapshot = await getDocs(q);
+
+      const passwords = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setUserPasswords(passwords); // บันทึกรหัสผ่านใน state
+    } catch (error) {
+      console.error('Error fetching user passwords: ', error);
+      setError('Error fetching passwords');
+    } finally {
+      setLoading(false); // สิ้นสุดการโหลด
+    }
+  };
+
+  // เรียกใช้ fetchUserPasswords ทุกครั้งเมื่อผู้ใช้กลับมาที่หน้าจอนี้
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserPasswords();
+    }, [])
+  );
+
+  // บันทึกข้อมูลรหัสผ่าน
   const saveData = async () => {
     if (!application || !username || !password) {
       alert('Please enter application, username, and password');
@@ -35,7 +79,7 @@ export default function MainProjectScreen({ navigation }) {
     }
 
     try {
-      const user = auth.currentUser; // Get current user
+      const user = auth.currentUser; // ตรวจสอบว่าผู้ใช้ล็อกอินแล้ว
       if (!user) {
         alert('User not logged in');
         return;
@@ -46,18 +90,19 @@ export default function MainProjectScreen({ navigation }) {
         username: username,
         password: password,
         note: note || '',
-        createdAt: serverTimestamp(), // Store timestamp
-        userId: user.uid, // Store the current user's ID
+        createdAt: serverTimestamp(), // บันทึกเวลา
+        userId: user.uid, // บันทึก userId ของผู้ใช้
       });
 
       alert('Data saved successfully');
-      navigation.navigate('Home2');
+      navigation.navigate('Home2'); // ย้อนกลับไปหน้า Home2 หลังบันทึกสำเร็จ
 
-      // Clear input fields
+      // ล้างข้อมูลที่กรอกในฟอร์ม
       setApplication('');
       setUsername('');
       setPassword('');
       setNote('');
+      fetchUserPasswords(); // ดึงข้อมูลใหม่หลังบันทึก
     } catch (error) {
       console.error('Error saving data: ', error);
       alert('Error saving data');
@@ -66,6 +111,13 @@ export default function MainProjectScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Loading...</Text>
+        </View>
+      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
       <TextInput
         style={styles.input}
         placeholder="Application"
@@ -83,7 +135,7 @@ export default function MainProjectScreen({ navigation }) {
         placeholder="Password"
         value={password}
         onChangeText={handlePasswordChange}
-        secureTextEntry={true} // Hide password by default
+        secureTextEntry={true} // ซ่อนรหัสผ่าน
       />
       <View style={styles.progressBarContainer}>
         <View
@@ -145,5 +197,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
   },
 });
